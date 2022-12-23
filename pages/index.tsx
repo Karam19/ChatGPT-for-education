@@ -1,23 +1,10 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import Layout from "../src/components/layout";
 
-export default function Page() {
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-
+export default function IndexPage() {
   return (
-    <>
-      {!session && (
-        <>
-          Not signed in <br />
-          <button onClick={() => signIn()}>Sign in</button>
-        </>
-      )}
-      {session && (
-        <>
-          Signed in as {session.user} <br />
-          <button onClick={() => signOut()}>Sign out</button>
-        </>
-      )}
-    </>
+    <Layout>
+      <h1>Exploration Etherscan + ChatGPt for education</h1>
+      <p>Here you will find learning tracks</p>
+    </Layout>
   );
 }
