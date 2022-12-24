@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./test.module.css";
-import { fetchPage } from "../../utils/Scraper";
+import { getContributors } from "../../utils/Scraper";
 
 export default function Test() {
   const [url, setUrl] = useState("Enter address here");
@@ -9,8 +9,8 @@ export default function Test() {
   }
   async function handleSearch() {
     console.log("url here is: ", url);
-    const htmlData = await fetchPage(url);
-    console.log(htmlData);
+    const htmlData = await getContributors(url);
+    console.log("html data is: ", htmlData);
   }
   return (
     <>

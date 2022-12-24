@@ -1,21 +1,45 @@
-import axios from "axios";
-// import { JSDOM } from "jsdom";
+import { Octokit } from "octokit";
 
-export function fetchPage(url: string): Promise<string | undefined> {
-  const HTMLData = axios
-    .get(url)
-    .then((res) => res.data)
-    .catch((error) => {
-      console.error(`There was an error with ${error.config.url}.`);
-      console.error(error.toJSON());
-    });
-
-  return HTMLData;
+export async function getContent(url: string) {
+  const octokit = new Octokit({
+    auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
+  });
+  console.log("token here is: ", process.env.NEXT_PUBLIC_GITHUB_TOKEN);
+  try {
+    const content = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}{?ref}",
+      {
+        owner: "hasankhadra",
+        repo: "innoday",
+        path: "/netlify.toml",
+        ref: "main",
+      }
+    );
+    console.log("content is: ", content);
+    return content;
+  } catch (error) {
+    console.log(error);
+  }
+  return "Not found";
 }
 
-// export async function fetchFromWebOrCache(url: string) {
-//   // Get the HTMLData from fetching or from cache
-//   const HTMLData = await fetchPage(url);
-//   const dom = new JSDOM(HTMLData);
-//   return dom.window.document;
-// }
+export async function getContributors(url: string) {
+  const octokit = new Octokit({
+    auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
+  });
+  console.log("token here is: ", process.env.NEXT_PUBLIC_GITHUB_TOKEN);
+  try {
+    const content = await octokit.request(
+      "GET /repos/{owner}/{repo}/contributors{?anon,per_page,page}",
+      {
+        owner: "hasankhadra",
+        repo: "innoday",
+      }
+    );
+    console.log("content is: ", content);
+    return content;
+  } catch (error) {
+    console.log(error);
+  }
+  return "Not found";
+}
