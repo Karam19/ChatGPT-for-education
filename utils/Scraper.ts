@@ -4,19 +4,17 @@ export async function getContent(url: string) {
   const octokit = new Octokit({
     auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
   });
-  console.log("token here is: ", process.env.NEXT_PUBLIC_GITHUB_TOKEN);
   try {
     const content = await octokit.request(
       "GET /repos/{owner}/{repo}/contents/{path}{?ref}",
       {
-        owner: "hasankhadra",
-        repo: "innoday",
-        path: "/netlify.toml",
+        owner: "Karam19",
+        repo: "PatentsDapp",
+        path: "/src/components/SubmitForm/index.tsx",
         ref: "main",
       }
     );
-    console.log("content is: ", content);
-    return content;
+    return content.data.content;
   } catch (error) {
     console.log(error);
   }
@@ -27,7 +25,6 @@ export async function getContributors(url: string) {
   const octokit = new Octokit({
     auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
   });
-  console.log("token here is: ", process.env.NEXT_PUBLIC_GITHUB_TOKEN);
   try {
     const content = await octokit.request(
       "GET /repos/{owner}/{repo}/contributors{?anon,per_page,page}",
