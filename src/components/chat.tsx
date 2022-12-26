@@ -1,6 +1,6 @@
 import React from "react";
 import type { NextPage } from "next";
-import styles from "./chat.module.css";
+import styles from "../../styles/chat.module.css";
 
 export default function Chat() {
   const [value, setValue] = React.useState<string>("");

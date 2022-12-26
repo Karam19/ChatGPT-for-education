@@ -1,6 +1,7 @@
 import { useState } from "react";
-import styles from "./addContent.module.css";
+import styles from "../../styles/addContent.module.css";
 import { getContent } from "../../utils/Scraper";
+import { useSession } from "next-auth/react";
 
 export default function AddContent() {
   // Owner regex is: (?<=https:\/\/github\.com\/).+?(?=\/)
@@ -8,6 +9,7 @@ export default function AddContent() {
   // Repo regex: (?<=https:\/\/github\.com\/Karam19\/).+?(?=\/blob\/)
   // ref regex: (?<=blob\/).+?(?=\/)
   // path regex: (?<=blob\/main).+
+  const { data: session, status } = useSession();
   const [topics, setTopics] = useState("");
   const [url, setUrl] = useState("");
   const [searchError, setSearchError] = useState<boolean>(false);
@@ -91,6 +93,7 @@ export default function AddContent() {
 
   async function handleSubmit() {
     console.log("Submit is not implemented yet");
+    console.log("Session is: ", session);
   }
 
   return (

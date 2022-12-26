@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./test.module.css";
+import styles from "../../styles/test.module.css";
 import { getContent } from "../../utils/Scraper";
 import { CopyBlock, dracula } from "react-code-blocks";
 
