@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.5rem;
+  text-decoration: none;
+  transition: color 0.2s linear;
+  border-left: 4px solid #0070f3;
+  border-right: 4px solid #0070f3;
+  padding: 30px;
+  min-width: 600px;
+}
+
+.label {
+  font-size: x-large;
+  align-text: center;
+}
+
+.input {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 400px;
+  text-align: center;
+}
+
+.button {
+  background-color: #0070f3;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-top: 20px;
+  margin-down: 20px;
+}
+.errortext {
+  font-size: small;
+  align-text: center;
+  color: red;
+}
