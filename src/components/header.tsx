@@ -67,6 +67,9 @@ export default function Header() {
             <Link href="/">Home</Link>
           </li>
           <li className={styles.navItem}>
+            <Link href="/chat">Chat</Link>
+          </li>
+          <li className={styles.navItem}>
             <Link href="/about">About</Link>
           </li>
         </ul>

@@ -1,5 +1,4 @@
 import React from "react";
-import type { NextPage } from "next";
 import styles from "../../styles/chat.module.css";
 
 export default function Chat() {
@@ -36,11 +35,11 @@ export default function Chat() {
 
   return (
     <div className={styles.main}>
-      <div>Please type your prompt</div>
+      <div>Ask ChatGPT</div>
       <input value={value} onChange={handleInput} onKeyDown={handleKeyDown} />
-      <div>Prompt: {prompt}</div>
+      <div>Question: {prompt}</div>
       <div>
-        Completion:{" "}
+        Answer:{" "}
         {completion.split("\n").map((item) => (
           <>
             {item}
