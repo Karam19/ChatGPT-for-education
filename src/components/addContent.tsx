@@ -10,8 +10,8 @@ export default function AddContent() {
   // path regex: (?<=blob\/main).+
   const [topics, setTopics] = useState("");
   const [url, setUrl] = useState("");
-  //   const [content, setContent] = useState("");
   const [searchError, setSearchError] = useState<boolean>(false);
+  const [content, setContent] = useState<string>("");
 
   function handleTopicChange(event: any) {
     setTopics(event.target.value);
@@ -19,6 +19,34 @@ export default function AddContent() {
 
   function handleUrlChange(event: any) {
     setUrl(event.target.value);
+  }
+
+  function handleContentChange(event: any) {
+    setContent(event.target.value);
+  }
+
+  async function GenerateContetnt(
+    owner: string,
+    repo: string,
+    ref: string,
+    path: string
+  ) {
+    setContent("Generating...");
+    const response = await fetch("/api/add/content", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        owner: owner,
+        repo: repo,
+        ref: ref,
+        path: path,
+      }),
+    });
+    const data = await response.json();
+    console.log(data.result);
+    setContent(Buffer.from(data.result, "base64").toString("binary"));
   }
 
   async function handleGenerate() {
@@ -58,6 +86,11 @@ export default function AddContent() {
     console.log("ref is: ", ref[0]);
     console.log("path is: ", path[0]);
     setSearchError(false);
+    GenerateContetnt(owner[0], repo[0], ref[0], path[0]);
+  }
+
+  async function handleSubmit() {
+    console.log("Submit is not implemented yet");
   }
 
   return (
@@ -86,6 +119,15 @@ export default function AddContent() {
           onClick={handleGenerate}
         >
           Generate content
+        </button>
+        <label className={styles.label}>Content</label>
+        <textarea
+          className={styles.textarea}
+          value={content}
+          onChange={handleContentChange}
+        ></textarea>
+        <button type="submit" className={styles.button} onClick={handleSubmit}>
+          Submit
         </button>
       </div>
     </>
