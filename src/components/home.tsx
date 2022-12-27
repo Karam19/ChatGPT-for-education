@@ -1,7 +1,9 @@
 import { useState } from "react";
 import styles from "../../styles/home.module.css";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
   const tracks = [
     {
       name: "Databases course",
@@ -24,6 +26,9 @@ export default function Home() {
     const repo = repoRe.exec(url);
     return repo;
   }
+  function handleClick(event: any) {
+    router.push("/add-track");
+  }
   return (
     <>
       <h1 className={styles.title}>
@@ -41,9 +46,9 @@ export default function Home() {
           </p>
         </div>
       ))}
-      <div className={styles.addContainer}>
-          <h1>Add new track</h1>
-        </div>
+      <div className={styles.addContainer} onClick={handleClick}>
+        <h1>Add new track</h1>
+      </div>
     </>
   );
 }
