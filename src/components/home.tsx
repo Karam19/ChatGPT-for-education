@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "../../styles/home.module.css";
 import { useRouter } from "next/router";
+import { Popup } from "./popup";
 
 interface trackInterface {
   title: string;
@@ -10,10 +11,19 @@ interface trackInterface {
   contents?: string;
 }
 
+interface popup {
+  show: boolean;
+  id: string;
+}
+
 export default function Home() {
   const router = useRouter();
   const [tracks, setTracks] = useState<trackInterface[]>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
+  const [popup, setPopup] = useState({
+    show: false,
+    id: "null",
+  });
   // const tracks = [
   //   {
   //     name: "Databases course",
@@ -40,7 +50,31 @@ export default function Home() {
     router.push("/add-track");
   }
 
-  async function handleDelete(id: string) {
+  const handleDelete = (id: string) => {
+    setPopup({
+      show: true,
+      id,
+    });
+  };
+
+  const handleDeleteTrue = async () => {
+    if (popup.show && popup.id !== "null") {
+      await deleteTrack(popup.id);
+      setPopup({
+        show: false,
+        id: "null",
+      });
+    }
+  };
+
+  const handleDeleteFalse = () => {
+    setPopup({
+      show: false,
+      id: "null",
+    });
+  };
+
+  async function deleteTrack(id: string) {
     setIsWaiting(true);
     const response = await fetch(`/api/tracks/${id}`, {
       method: "DELETE",
@@ -95,7 +129,7 @@ export default function Home() {
             disabled={isWaiting}
             className={styles.button}
             onClick={async () => {
-              await handleDelete(track._id);
+              handleDelete(track._id);
             }}
           >
             delete
@@ -105,6 +139,12 @@ export default function Home() {
       <div className={styles.addContainer} onClick={handleClick}>
         <h1>Add new track</h1>
       </div>
+      {popup.show && (
+        <Popup
+          handleDeleteTrue={handleDeleteTrue}
+          handleDeleteFalse={handleDeleteFalse}
+        />
+      )}
     </>
   );
 }
