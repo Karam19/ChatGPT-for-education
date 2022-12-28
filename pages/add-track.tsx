@@ -6,6 +6,7 @@ export default function AddTrack() {
   const [trackName, setTrackName] = useState<string>("");
   const [url, setUrl] = useState<string>("");
   const [searchError, setSearchError] = useState<boolean>(false);
+  const [isWaiting, setIsWaiting] = useState<boolean>(false);
 
   function handleTrackNameChange(event: any) {
     setTrackName(event.target.value);
@@ -16,6 +17,7 @@ export default function AddTrack() {
   }
 
   async function handleSubmit() {
+    setIsWaiting(true);
     const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
     const owner = ownerRe.exec(url);
     if (owner === null) {
@@ -40,13 +42,14 @@ export default function AddTrack() {
     const response = await fetch("/api/tracks", {
       method: "POST",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ title: trackName, link: url }),
     });
     const data = await response.json();
     console.log("Fetched data is: ", data);
+    setIsWaiting(false);
   }
 
   return (
@@ -69,7 +72,12 @@ export default function AddTrack() {
         {searchError && (
           <div className={styles.errortext}>Invalid github url</div>
         )}
-        <button type="submit" className={styles.button} onClick={handleSubmit}>
+        <button
+          disabled={isWaiting}
+          type="submit"
+          className={styles.button}
+          onClick={handleSubmit}
+        >
           Submit
         </button>
       </div>
