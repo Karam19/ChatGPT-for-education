@@ -15,7 +15,7 @@ export default function AddTrack() {
     setUrl(event.target.value);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
     const owner = ownerRe.exec(url);
     if (owner === null) {
@@ -23,16 +23,30 @@ export default function AddTrack() {
       return;
     }
 
-    const repoRe = new RegExp(
-      `(?<=https://github.com/${owner[0]}/).+?(?=/blob/)`,
-      "g"
-    );
+    const repoRe = new RegExp(`(?<=https://github.com/${owner[0]}/).+`, "g");
     const repo = repoRe.exec(url);
     if (repo === null) {
       setSearchError(true);
       return;
     }
-    
+    setSearchError(false);
+
+    // const response = await fetch("/api/tracks", {
+    //   method: "GET",
+    // });
+    // const data = await response.json();
+    // console.log("Fetched data is: ", data);
+
+    const response = await fetch("/api/tracks", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: trackName, link: url }),
+    });
+    const data = await response.json();
+    console.log("Fetched data is: ", data);
   }
 
   return (

@@ -26,7 +26,7 @@ export default function Home() {
     const repo = repoRe.exec(url);
     return repo;
   }
-  function handleClick(event: any) {
+ function handleClick() {
     router.push("/add-track");
   }
   return (
