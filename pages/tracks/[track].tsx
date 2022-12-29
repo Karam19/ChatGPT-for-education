@@ -120,6 +120,10 @@ export default function Track() {
     return data.data;
   }
 
+  const handleNavContent = (id: string) => {
+    router.push(`/contents/${id}`);
+  };
+
   useEffect(() => {
     const fetchTrack = async () => {
       const data: any = await getTrack();
@@ -149,7 +153,13 @@ export default function Track() {
       </h1>
       <h2 className={styles.h1}>Contents of the track</h2>
       {contents.map((content) => (
-        <div key={content._id} className={styles.container}>
+        <div
+          key={content._id}
+          className={styles.container}
+          onClick={() => {
+            handleNavContent(content._id);
+          }}
+        >
           <h2 className={styles.h2}>{content.topics}</h2>
           <p>
             Based on{" "}
