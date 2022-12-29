@@ -85,7 +85,7 @@ export default function Home() {
       method: "GET",
     });
     const data = await response.json();
-    console.log("Fetched data is: ", data);
+    // console.log("Fetched data is: ", data);
     return data.data;
   }
 

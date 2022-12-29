@@ -12,6 +12,12 @@
   color: black;
 }
 
+.h3 {
+  text-align: center;
+  color: black;
+  font-size: large;
+}
+
 .container {
   text-align: center;
   padding: 10px;
