@@ -30,11 +30,6 @@ if (!cached) {
 async function dbConnect() {
   if (cached.conn) return cached.conn;
 
-  console.log(
-    "Connection URL is:",
-    `${NEXT_PUBLIC_MONGO_URL}/${NEXT_PUBLIC_MONGODB_DB}`
-  );
-
   if (!cached.promise) {
     cached.promise = mongoose
       .connect(NEXT_PUBLIC_MONGO_URL || "")

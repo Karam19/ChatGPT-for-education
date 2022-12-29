@@ -3,17 +3,17 @@ import styles from "../../styles/addContent.module.css";
 import { getContent } from "../../utils/Scraper";
 import { useSession } from "next-auth/react";
 
-export default function AddContent() {
-  // Owner regex is: (?<=https:\/\/github\.com\/).+?(?=\/)
-  // Owner and repo regex: (?<=https:\/\/github\.com\/).+?(?=\/).+?(?=\/)
-  // Repo regex: (?<=https:\/\/github\.com\/Karam19\/).+?(?=\/blob\/)
-  // ref regex: (?<=blob\/).+?(?=\/)
-  // path regex: (?<=blob\/main).+
+interface propsInterface {
+  trackId: string | string[];
+}
+export default function AddContent(props: propsInterface) {
+  const { trackId } = props;
   const { data: session, status } = useSession();
   const [topics, setTopics] = useState("");
   const [url, setUrl] = useState("");
   const [searchError, setSearchError] = useState<boolean>(false);
   const [content, setContent] = useState<string>("");
+  const [isWaiting, setIsWaiting] = useState<boolean>(false);
 
   function handleTopicChange(event: any) {
     setTopics(event.target.value);
@@ -33,8 +33,9 @@ export default function AddContent() {
     ref: string,
     path: string
   ) {
+    setIsWaiting(true);
     setContent("Generating...");
-    const response = await fetch("/api/add/content", {
+    const response = await fetch("/api/contents/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,11 +45,14 @@ export default function AddContent() {
         repo: repo,
         ref: ref,
         path: path,
+        topics: topics,
+        trackId: trackId,
       }),
     });
     const data = await response.json();
-    console.log(data.result);
-    setContent(Buffer.from(data.result, "base64").toString("binary"));
+    console.log(data.result.choices[0].text);
+    setContent(data.result.choices[0].text);
+    setIsWaiting(false);
   }
 
   async function handleGenerate() {
@@ -92,8 +96,23 @@ export default function AddContent() {
   }
 
   async function handleSubmit() {
-    console.log("Submit is not implemented yet");
-    console.log("Session is: ", session);
+    setIsWaiting(true);
+    const response = await fetch("/api/contents", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        topics: topics,
+        link: url,
+        answer: content,
+        trackId: trackId,
+      }),
+    });
+    const data = await response.json();
+    console.log("Data is: ", data);
+    setIsWaiting(false);
   }
 
   return (
@@ -119,6 +138,7 @@ export default function AddContent() {
         <button
           type="submit"
           className={styles.button}
+          disabled={isWaiting}
           onClick={handleGenerate}
         >
           Generate content
@@ -129,7 +149,12 @@ export default function AddContent() {
           value={content}
           onChange={handleContentChange}
         ></textarea>
-        <button type="submit" className={styles.button} onClick={handleSubmit}>
+        <button
+          type="submit"
+          className={styles.button}
+          onClick={handleSubmit}
+          disabled={isWaiting}
+        >
           Submit
         </button>
       </div>

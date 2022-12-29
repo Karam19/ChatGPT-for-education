@@ -20,22 +20,10 @@ export default function Home() {
   const router = useRouter();
   const [tracks, setTracks] = useState<trackInterface[]>([]);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
-  const [popup, setPopup] = useState({
+  const [popup, setPopup] = useState<popup>({
     show: false,
     id: "null",
   });
-  // const tracks = [
-  //   {
-  //     name: "Databases course",
-  //     link: "https://github.com/Karam19/Databases",
-  //     id: 0,
-  //   },
-  //   {
-  //     name: "Front end basics",
-  //     link: "https://github.com/Karam19/FWD_Assignments",
-  //     id: 1,
-  //   },
-  // ];
   function getRepoName(url: string) {
     const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
     const owner = ownerRe.exec(url);
@@ -101,6 +89,10 @@ export default function Home() {
     return data.data;
   }
 
+  const handleNavTrack = (id: string) => {
+    router.push(`/tracks/${id}`);
+  };
+
   useEffect(() => {
     const fetchTracks = async () => {
       const data: any = await getTracks();
@@ -116,7 +108,13 @@ export default function Home() {
       </h1>
       <h1 className={styles.h1}>Learning tracks</h1>
       {tracks.map((track) => (
-        <div key={track._id} className={styles.container}>
+        <div
+          key={track._id}
+          className={styles.container}
+          onClick={() => {
+            handleNavTrack(track._id);
+          }}
+        >
           <h2 className={styles.h2}>{track.title}</h2>
           <p>
             Based on{" "}

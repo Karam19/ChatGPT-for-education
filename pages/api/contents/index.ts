@@ -1,5 +1,6 @@
 import dbConnect from "../../../utils/dbConnector";
 import Track from "../../../models/Track";
+import Content from "../../../models/Content";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 dbConnect();
@@ -13,23 +14,32 @@ export default async function handler(
   switch (method) {
     case "GET":
       try {
-        const tracks = await Track.find({});
+        const contents = await Content.find({});
 
-        res.status(200).json({ success: true, data: tracks });
+        res.status(200).json({ success: true, data: contents });
       } catch (error) {
         res.status(400).json({ success: false });
       }
       break;
     case "POST":
       try {
-        console.log("request body is: ", req.body);
-        const track = await Track.create({
-          title: req.body.title,
+        // console.log("request body is: ", req.body);
+        const content = await Content.create({
+          topics: req.body.topics,
           link: req.body.link,
-          contents: [],
+          answer: req.body.answer,
         });
 
-        res.status(201).json({ success: true, data: track });
+        const track = await Track.findById(req.body.trackId);
+
+        track.contents.push(content._id);
+
+        await Track.findByIdAndUpdate(req.body.trackId, track, {
+          new: true,
+          runValidators: true,
+        });
+
+        res.status(201).json({ success: true, data: content });
       } catch (error) {
         console.log("Error is: ", error);
         res.status(400).json({ success: false });

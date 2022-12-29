@@ -46,6 +46,7 @@
   font-size: 16px;
   margin-top: 20px;
   margin-down: 20px;
+  cursor: pointer;
 }
 
 .errortext {
