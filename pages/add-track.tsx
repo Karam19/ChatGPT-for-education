@@ -1,12 +1,16 @@
 import { useState } from "react";
 import Layout from "../src/components/layout";
 import styles from "../styles/addContent.module.css";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 export default function AddTrack() {
+  const router = useRouter();
   const [trackName, setTrackName] = useState<string>("");
   const [url, setUrl] = useState<string>("");
   const [searchError, setSearchError] = useState<boolean>(false);
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
+  const { status } = useSession();
 
   function handleTrackNameChange(event: any) {
     setTrackName(event.target.value);
@@ -18,6 +22,11 @@ export default function AddTrack() {
 
   async function handleSubmit() {
     setIsWaiting(true);
+    if (status === "unauthenticated") {
+      alert("Failed to add track!\nPlease Sign in");
+      setIsWaiting(false);
+      return;
+    }
     const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
     const owner = ownerRe.exec(url);
     if (owner === null) {
@@ -53,6 +62,20 @@ export default function AddTrack() {
     const data = await response.json();
     console.log("Fetched data is: ", data);
     setIsWaiting(false);
+    if (!data.success) {
+      const statusCode = response.status;
+      if (statusCode === 401) {
+        alert("Failed to add track!\nPlease Sign in");
+      } else if (statusCode === 403) {
+        alert(
+          "Failed to add track!\nYou don't have permission to add this track"
+        );
+      } else if (statusCode === 403) {
+        alert("Failed to add track!\nBad request");
+      }
+    } else {
+      router.push(`/tracks/${data._id}`);
+    }
   }
 
   return (

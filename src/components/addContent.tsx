@@ -1,14 +1,12 @@
 import { useState } from "react";
 import styles from "../../styles/addContent.module.css";
-import { getContent } from "../../utils/Scraper";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
-interface propsInterface {
-  trackId: string | string[];
-}
-export default function AddContent(props: propsInterface) {
-  const { trackId } = props;
-  const { data: session, status } = useSession();
+export default function AddContent() {
+  const router = useRouter();
+  const { track: trackId } = router.query;
+  const { status } = useSession();
   const [topics, setTopics] = useState("");
   const [url, setUrl] = useState("");
   const [searchError, setSearchError] = useState<boolean>(false);
@@ -97,6 +95,16 @@ export default function AddContent(props: propsInterface) {
 
   async function handleSubmit() {
     setIsWaiting(true);
+    if (content.length === 0 || url.length === 0 || topics.length === 0) {
+      alert("Invalid fields");
+      setIsWaiting(false);
+      return;
+    }
+    if (status === "unauthenticated") {
+      alert("Failed to add content!\nPlease Sign in");
+      setIsWaiting(false);
+      return;
+    }
     const response = await fetch("/api/contents", {
       method: "POST",
       headers: {
@@ -111,8 +119,21 @@ export default function AddContent(props: propsInterface) {
       }),
     });
     const data = await response.json();
-    console.log("Data is: ", data);
     setIsWaiting(false);
+    if (!data.success) {
+      const statusCode = response.status;
+      if (statusCode === 401) {
+        alert("Failed to add content!\nPlease Sign in");
+      } else if (statusCode === 403) {
+        alert(
+          "Failed to add content!\nYou don't have permission to add content"
+        );
+      } else if (statusCode === 403) {
+        alert("Failed to add content!\nBad request");
+      }
+    } else {
+      router.push(`/contents/${data._id}`);
+    }
   }
 
   return (

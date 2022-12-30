@@ -3,6 +3,7 @@ import Layout from "../../src/components/layout";
 import styles from "../../styles/home.module.css";
 import { useRouter } from "next/router";
 import { Popup } from "../../src/components/popup";
+import { useSession } from "next-auth/react";
 
 interface trackInterface {
   title: string;
@@ -40,6 +41,7 @@ export default function Track() {
     id: "null",
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { status } = useSession();
 
   const { track: trackId } = router.query;
 
@@ -83,6 +85,11 @@ export default function Track() {
 
   async function deleteContent(id: string) {
     setIsWaiting(true);
+    if (status === "unauthenticated") {
+      alert("Failed to delete!\nPlease Sign in");
+      setIsWaiting(false);
+      return;
+    }
     const response = await fetch(`/api/contents/${id}`, {
       method: "DELETE",
       headers: {
@@ -92,7 +99,14 @@ export default function Track() {
     });
     const data = await response.json();
     if (!data.success) {
-      alert("Failed to delete");
+      const statusCode = response.status;
+      if (statusCode === 401) {
+        alert("Failed to delete!\nPlease Sign in");
+      } else if (statusCode === 403) {
+        alert("Failed to delete!\nYou don't have permission to delete");
+      } else if (statusCode === 403) {
+        alert("Failed to delete!\nBad request");
+      }
     } else {
       alert("Deleted successfully!");
     }

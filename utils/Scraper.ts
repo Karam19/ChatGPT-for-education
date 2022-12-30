@@ -22,8 +22,8 @@ export async function getContent(url: string) {
 }
 
 export async function isContributor(
-  owner: RegExpExecArray | null,
-  repo: RegExpExecArray | null,
+  owner: string | null,
+  repo: string | null,
   user: string | null | undefined
 ) {
   const octokit = new Octokit({
@@ -38,6 +38,7 @@ export async function isContributor(
       }
     );
     const data = content.data;
+    console.log("Data is: ", data);
     for (let i = 0; i < data.length; i++) {
       if (data[i].login === user) {
         return true;
@@ -59,7 +60,10 @@ export async function getOwnerAndRepo(url: string) {
 
   const repoRe = new RegExp(`(?<=https://github.com/${owner[0]}/).+`, "g");
   const repo = repoRe.exec(url);
-  return [owner, repo];
+  if (repo === null) {
+    return null;
+  }
+  return [owner[0], repo[0]];
 }
 
 export async function getOwnerAndRepoForContent(url: string) {
@@ -69,7 +73,13 @@ export async function getOwnerAndRepoForContent(url: string) {
     return null;
   }
 
-  const repoRe = new RegExp(`(?<=https://github.com/${owner[0]}/).+?(?=/blob/)`, "g");
+  const repoRe = new RegExp(
+    `(?<=https://github.com/${owner[0]}/).+?(?=/blob/)`,
+    "g"
+  );
   const repo = repoRe.exec(url);
-  return [owner, repo];
+  if (repo === null) {
+    return null;
+  }
+  return [owner[0], repo[0]];
 }

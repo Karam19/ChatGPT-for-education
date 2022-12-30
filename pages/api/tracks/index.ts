@@ -41,6 +41,9 @@ export default async function handler(
             return;
           }
           if (session !== null) {
+            console.log("Owner is:", ownerRepo[0]);
+            console.log("Repo is:", ownerRepo[1]);
+            console.log("User is: ", session.user);
             const contributor = await isContributor(
               ownerRepo[0],
               ownerRepo[1],
