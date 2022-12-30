@@ -74,7 +74,7 @@ export default function AddTrack() {
         alert("Failed to add track!\nBad request");
       }
     } else {
-      router.push(`/tracks/${data._id}`);
+      router.push(`/tracks/${data.data._id}`);
     }
   }
 

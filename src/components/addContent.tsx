@@ -132,7 +132,7 @@ export default function AddContent() {
         alert("Failed to add content!\nBad request");
       }
     } else {
-      router.push(`/contents/${data._id}`);
+      router.push(`/contents/${data.data._id}`);
     }
   }
 

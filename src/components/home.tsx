@@ -79,6 +79,7 @@ export default function Home() {
   async function deleteTrack(id: string) {
     if (status === "unauthenticated") {
       alert("Failed to delete!\nPlease Sign in");
+    setIsWaiting(false);
       return;
     }
     const response = await fetch(`/api/tracks/${id}`, {
