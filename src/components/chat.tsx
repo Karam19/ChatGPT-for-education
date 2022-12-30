@@ -27,7 +27,12 @@ export default function Chat() {
         });
         const data = await response.json();
         setValue("");
-        setCompletion(data.result.choices[0].text);
+        if (data.status === 401) {
+          alert("Please sign in to use chat");
+          setCompletion("Loading...");
+        } else {
+          setCompletion(data.result.choices[0].text);
+        }
       }
     },
     [value]

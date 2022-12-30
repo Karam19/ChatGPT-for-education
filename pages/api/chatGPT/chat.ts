@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai";
+import { unstable_getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 const configuration = new Configuration({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_SECRET_KEY,
@@ -10,6 +12,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await unstable_getServerSession(req, res, authOptions);
+
+  if (!session) {
+    res.status(401).json({ success: false });
+    return;
+  }
+
   const completion = await openai.createCompletion({
     model: "text-davinci-002",
     prompt: req.body.text,

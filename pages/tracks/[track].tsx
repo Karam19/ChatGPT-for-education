@@ -122,7 +122,6 @@ export default function Track() {
       const data = await response.json();
       contentsArr.push(data.data);
     }
-    console.log("fetched contents is: ", contentsArr);
     return contentsArr;
   }
 
@@ -131,7 +130,6 @@ export default function Track() {
       method: "GET",
     });
     const data = await response.json();
-    console.log("Fetched track is: ", data.data);
     return data.data;
   }
 
@@ -155,7 +153,6 @@ export default function Track() {
       const data: any = await getContents();
       setContents(data);
     };
-    console.log("Length of contents is: ", track.contents.length);
     if (track.contents.length > 0) {
       fetchContents().catch(console.error);
     }
@@ -192,8 +189,6 @@ export default function Track() {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log("Clicked");
-                  // router.push(track.link);
                   window.open(content.link, "_blank");
                 }}
               >

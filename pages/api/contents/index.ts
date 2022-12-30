@@ -56,7 +56,6 @@ export default async function handler(
             }
           }
         }
-        // console.log("request body is: ", req.body);
         const content = await Content.create({
           topics: req.body.topics,
           link: req.body.link,

@@ -31,7 +31,6 @@ export default async function handler(
     }
     const code = Buffer.from(content.data.content, "base64").toString("binary");
     const prompt = `Can you explain ${req.body.topics} based on the following code ${code}`;
-    console.log("Prompt is the following", prompt);
     const completion = await openai.createCompletion({
       model: "text-davinci-002",
       prompt: prompt,

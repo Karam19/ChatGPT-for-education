@@ -38,7 +38,6 @@ export async function isContributor(
       }
     );
     const data = content.data;
-    console.log("Data is: ", data);
     for (let i = 0; i < data.length; i++) {
       if (typeof id !== "undefined") {
         if (data[i].id === parseInt(id)) {

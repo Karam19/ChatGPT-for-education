@@ -40,14 +40,6 @@ export default function Home() {
   }
   async function handleClick() {
     router.push("/add-track");
-    // const response = await fetch(`/api/test`, {
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //   },
-    // });
-    // console.log("response is: ", response);
   }
 
   const handleDelete = (id: string) => {
@@ -90,7 +82,6 @@ export default function Home() {
       },
     });
     const data = await response.json();
-    console.log("Status code is: ", response.status);
     if (!data.success) {
       const statusCode = response.status;
       if (statusCode === 401) {

@@ -42,14 +42,7 @@ export default function AddTrack() {
       setIsWaiting(false);
       return;
     }
-    console.log("Owner and Repo are: ", owner, repo);
     setSearchError(false);
-
-    // const response = await fetch("/api/tracks", {
-    //   method: "GET",
-    // });
-    // const data = await response.json();
-    // console.log("Fetched data is: ", data);
 
     const response = await fetch("/api/tracks", {
       method: "POST",
@@ -60,7 +53,6 @@ export default function AddTrack() {
       body: JSON.stringify({ title: trackName, link: url }),
     });
     const data = await response.json();
-    console.log("Fetched data is: ", data);
     setIsWaiting(false);
     if (!data.success) {
       const statusCode = response.status;

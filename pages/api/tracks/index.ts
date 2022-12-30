@@ -41,9 +41,6 @@ export default async function handler(
             return;
           }
           if (session !== null) {
-            console.log("Owner is:", ownerRepo[0]);
-            console.log("Repo is:", ownerRepo[1]);
-            console.log("User is: ", session.user);
             const contributor = await isContributor(
               ownerRepo[0],
               ownerRepo[1],
@@ -56,7 +53,6 @@ export default async function handler(
           }
         }
 
-        console.log("request body is: ", req.body);
         const track = await Track.create({
           title: req.body.title,
           link: req.body.link,

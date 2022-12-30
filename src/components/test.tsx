@@ -16,7 +16,6 @@ export default function Test() {
   async function handleSearch() {
     const htmlData = await getContent(url);
     setContent(Buffer.from(htmlData, "base64").toString("binary"));
-    console.log("html data is: ", content);
   }
   return (
     <>

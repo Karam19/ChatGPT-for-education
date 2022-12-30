@@ -48,7 +48,6 @@ export default function AddContent() {
       }),
     });
     const data = await response.json();
-    console.log(data.result.choices[0].text);
     setContent(data.result.choices[0].text);
     setIsWaiting(false);
   }
@@ -85,10 +84,6 @@ export default function AddContent() {
       return;
     }
 
-    console.log("Owner is: ", owner[0]);
-    console.log("repo is: ", repo[0]);
-    console.log("ref is: ", ref[0]);
-    console.log("path is: ", path[0]);
     setSearchError(false);
     GenerateContetnt(owner[0], repo[0], ref[0], path[0]);
   }

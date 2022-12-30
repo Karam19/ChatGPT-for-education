@@ -27,7 +27,6 @@ export default function Content() {
       method: "GET",
     });
     const data = await response.json();
-    console.log("Content inside is: ", data.data);
     return data.data;
   }
 
