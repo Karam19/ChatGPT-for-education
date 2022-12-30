@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "../../styles/home.module.css";
 import { useRouter } from "next/router";
 import { Popup } from "./popup";
+import { isContributor } from "../../utils/Scraper";
 
 interface trackInterface {
   title: string;
@@ -35,8 +36,16 @@ export default function Home() {
     const repo = repoRe.exec(url);
     return repo;
   }
-  function handleClick() {
+  async function handleClick() {
     router.push("/add-track");
+    // const response = await fetch(`/api/test`, {
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+    // console.log("response is: ", response);
   }
 
   const handleDelete = (id: string) => {
@@ -87,7 +96,6 @@ export default function Home() {
       method: "GET",
     });
     const data = await response.json();
-    // console.log("Fetched data is: ", data);
     return data.data;
   }
 
@@ -136,8 +144,6 @@ export default function Home() {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log("Clicked");
-                  // router.push(track.link);
                   window.open(track.link, "_blank");
                 }}
               >

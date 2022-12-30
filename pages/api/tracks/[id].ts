@@ -1,6 +1,9 @@
 import dbConnect from "../../../utils/dbConnector";
 import Track from "../../../models/Track";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { unstable_getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
+import { getOwnerAndRepo, isContributor } from "../../../utils/Scraper";
 
 dbConnect();
 
@@ -12,6 +15,8 @@ export default async function handler(
     query: { id },
     method,
   } = req;
+
+  const session = await unstable_getServerSession(req, res, authOptions);
 
   switch (method) {
     case "GET":
@@ -27,24 +32,51 @@ export default async function handler(
         res.status(400).json({ success: false });
       }
       break;
-    case "PUT":
-      try {
-        const track = await Track.findByIdAndUpdate(id, req.body, {
-          new: true,
-          runValidators: true,
-        });
+    // case "PUT":
+    //   try {
+    //     const track = await Track.findByIdAndUpdate(id, req.body, {
+    //       new: true,
+    //       runValidators: true,
+    //     });
 
-        if (!track) {
-          res.status(404).json({ success: false });
+    //     if (!track) {
+    //       res.status(404).json({ success: false });
+    //     }
+
+    //     res.status(200).json({ success: true, data: track });
+    //   } catch (error) {
+    //     res.status(400).json({ success: false });
+    //   }
+    //   break;
+    case "DELETE":
+      if (!session) {
+        res.status(401).json({ success: false });
+        return;
+      }
+      try {
+        const track = await Track.findById(id);
+        const ownerRepo = await getOwnerAndRepo(track.link);
+        if (ownerRepo === null) {
+          res.status(400).json({ success: false });
+          return;
+        } else {
+          if (ownerRepo[0] === null && ownerRepo[1] === null) {
+            res.status(400).json({ success: false });
+            return;
+          }
+          if (session !== null) {
+            const contributor = await isContributor(
+              ownerRepo[0],
+              ownerRepo[1],
+              session.user?.name
+            );
+            if (!contributor) {
+              res.status(403).json({ success: false });
+              return;
+            }
+          }
         }
 
-        res.status(200).json({ success: true, data: track });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    case "DELETE":
-      try {
         const deletedTrack = await Track.deleteOne({ _id: id });
 
         if (!deletedTrack) {

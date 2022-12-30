@@ -22,6 +22,7 @@ export default function AddTrack() {
     const owner = ownerRe.exec(url);
     if (owner === null) {
       setSearchError(true);
+      setIsWaiting(false);
       return;
     }
 
@@ -29,8 +30,10 @@ export default function AddTrack() {
     const repo = repoRe.exec(url);
     if (repo === null) {
       setSearchError(true);
+      setIsWaiting(false);
       return;
     }
+    console.log("Owner and Repo are: ", owner, repo);
     setSearchError(false);
 
     // const response = await fetch("/api/tracks", {

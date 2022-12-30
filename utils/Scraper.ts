@@ -21,7 +21,11 @@ export async function getContent(url: string) {
   return "Not found";
 }
 
-export async function getContributors(url: string) {
+export async function isContributor(
+  owner: RegExpExecArray | null,
+  repo: RegExpExecArray | null,
+  user: string | null | undefined
+) {
   const octokit = new Octokit({
     auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
   });
@@ -29,14 +33,43 @@ export async function getContributors(url: string) {
     const content = await octokit.request(
       "GET /repos/{owner}/{repo}/contributors{?anon,per_page,page}",
       {
-        owner: "hasankhadra",
-        repo: "innoday",
+        owner: owner,
+        repo: repo,
       }
     );
-    console.log("content is: ", content);
-    return content;
+    const data = content.data;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].login === user) {
+        return true;
+      }
+    }
+    return false;
   } catch (error) {
     console.log(error);
   }
-  return "Not found";
+  return false;
+}
+
+export async function getOwnerAndRepo(url: string) {
+  const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
+  const owner = ownerRe.exec(url);
+  if (owner === null) {
+    return null;
+  }
+
+  const repoRe = new RegExp(`(?<=https://github.com/${owner[0]}/).+`, "g");
+  const repo = repoRe.exec(url);
+  return [owner, repo];
+}
+
+export async function getOwnerAndRepoForContent(url: string) {
+  const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
+  const owner = ownerRe.exec(url);
+  if (owner === null) {
+    return null;
+  }
+
+  const repoRe = new RegExp(`(?<=https://github.com/${owner[0]}/).+?(?=/blob/)`, "g");
+  const repo = repoRe.exec(url);
+  return [owner, repo];
 }
