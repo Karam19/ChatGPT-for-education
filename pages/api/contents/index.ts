@@ -48,7 +48,7 @@ export default async function handler(
             const contributor = await isContributor(
               ownerRepo[0],
               ownerRepo[1],
-              session.user?.name
+              session.user?.id
             );
             if (!contributor) {
               res.status(403).json({ success: false });

@@ -24,7 +24,7 @@ export async function getContent(url: string) {
 export async function isContributor(
   owner: string | null,
   repo: string | null,
-  user: string | null | undefined
+  id: string | undefined
 ) {
   const octokit = new Octokit({
     auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN,
@@ -40,8 +40,10 @@ export async function isContributor(
     const data = content.data;
     console.log("Data is: ", data);
     for (let i = 0; i < data.length; i++) {
-      if (data[i].login === user) {
-        return true;
+      if (typeof id !== "undefined") {
+        if (data[i].id === parseInt(id)) {
+          return true;
+        }
       }
     }
     return false;

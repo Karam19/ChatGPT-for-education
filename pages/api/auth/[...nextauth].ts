@@ -13,6 +13,14 @@ export const authOptions: NextAuthOptions = {
   theme: {
     colorScheme: "light",
   },
+  callbacks: {
+    session: async ({ session, token }) => {
+      if (session?.user) {
+        session.user.id = token.sub || "";
+      }
+      return session;
+    },
+  },
   // callbacks: {
   //   async jwt({ token }) {
   //     token.userRole = "admin";
