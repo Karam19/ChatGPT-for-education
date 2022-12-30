@@ -39,6 +39,7 @@ export default function Home() {
   }
 
   const handleDelete = (id: string) => {
+    setIsWaiting(true);
     setPopup({
       show: true,
       id,
@@ -60,10 +61,10 @@ export default function Home() {
       show: false,
       id: "null",
     });
+    setIsWaiting(false);
   };
 
   async function deleteTrack(id: string) {
-    setIsWaiting(true);
     const response = await fetch(`/api/tracks/${id}`, {
       method: "DELETE",
       headers: {
@@ -90,7 +91,9 @@ export default function Home() {
   }
 
   const handleNavTrack = (id: string) => {
-    router.push(`/tracks/${id}`);
+    if (!isWaiting) {
+      router.push(`/tracks/${id}`);
+    }
   };
 
   useEffect(() => {
@@ -118,7 +121,19 @@ export default function Home() {
           <h2 className={styles.h2}>{track.title}</h2>
           <p>
             Based on{" "}
-            <a className={styles.a} href={track.link}>
+            <a
+              className={styles.a}
+              href={track.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Clicked");
+                // router.push(track.link);
+                window.open(track.link, "_blank");
+              }}
+            >
               {getRepoName(track.link)}
             </a>
           </p>
@@ -126,7 +141,9 @@ export default function Home() {
             type="submit"
             disabled={isWaiting}
             className={styles.button}
-            onClick={async () => {
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
               handleDelete(track._id);
             }}
           >

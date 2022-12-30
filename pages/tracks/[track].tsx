@@ -163,7 +163,19 @@ export default function Track() {
           <h2 className={styles.h2}>{content.topics}</h2>
           <p>
             Based on{" "}
-            <a className={styles.a} href={content.link}>
+            <a
+              className={styles.a}
+              href={content.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Clicked");
+                // router.push(track.link);
+                window.open(content.link, "_blank");
+              }}
+            >
               {getFileName(content.link)}
             </a>
           </p>
@@ -171,7 +183,9 @@ export default function Track() {
             type="submit"
             disabled={isWaiting}
             className={styles.button}
-            onClick={async () => {
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
               handleDelete(track._id);
             }}
           >
