@@ -24,6 +24,7 @@ export default function Home() {
     show: false,
     id: "null",
   });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   function getRepoName(url: string) {
     const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
     const owner = ownerRe.exec(url);
@@ -100,6 +101,7 @@ export default function Home() {
     const fetchTracks = async () => {
       const data: any = await getTracks();
       setTracks(data);
+      setIsLoading(false);
     };
     fetchTracks().catch(console.error);
   }, [isWaiting]);
@@ -110,47 +112,54 @@ export default function Home() {
         Exploration Etherscan + ChatGPt for education
       </h1>
       <h1 className={styles.h1}>Learning tracks</h1>
-      {tracks.map((track) => (
-        <div
-          key={track._id}
-          className={styles.container}
-          onClick={() => {
-            handleNavTrack(track._id);
-          }}
-        >
-          <h2 className={styles.h2}>{track.title}</h2>
-          <p>
-            Based on{" "}
-            <a
-              className={styles.a}
-              href={track.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log("Clicked");
-                // router.push(track.link);
-                window.open(track.link, "_blank");
-              }}
-            >
-              {getRepoName(track.link)}
-            </a>
-          </p>
-          <button
-            type="submit"
-            disabled={isWaiting}
-            className={styles.button}
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleDelete(track._id);
+      {isLoading ? (
+        <h1 className={styles.title}>Loading...</h1>
+      ) : tracks.length === 0 ? (
+        <h1 className={styles.title}>Tracks empty</h1>
+      ) : (
+        tracks.map((track) => (
+          <div
+            key={track._id}
+            className={styles.container}
+            onClick={() => {
+              handleNavTrack(track._id);
             }}
           >
-            delete
-          </button>
-        </div>
-      ))}
+            <h2 className={styles.h2}>{track.title}</h2>
+            <p>
+              Based on{" "}
+              <a
+                className={styles.a}
+                href={track.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log("Clicked");
+                  // router.push(track.link);
+                  window.open(track.link, "_blank");
+                }}
+              >
+                {getRepoName(track.link)}
+              </a>
+            </p>
+            <button
+              type="submit"
+              disabled={isWaiting}
+              className={styles.button}
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDelete(track._id);
+              }}
+            >
+              delete
+            </button>
+          </div>
+        ))
+      )}
+
       <div className={styles.addContainer} onClick={handleClick}>
         <h1>Add new track</h1>
       </div>

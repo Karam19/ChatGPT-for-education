@@ -39,6 +39,7 @@ export default function Track() {
     show: false,
     id: "null",
   });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { track: trackId } = router.query;
 
@@ -128,6 +129,7 @@ export default function Track() {
     const fetchTrack = async () => {
       const data: any = await getTrack();
       setTrack(data);
+      setIsLoading(false);
     };
     if (trackId !== undefined) {
       fetchTrack().catch(console.error);
@@ -152,47 +154,53 @@ export default function Track() {
         Based on This <a href={track.link}>repository</a>
       </h1>
       <h2 className={styles.h1}>Contents of the track</h2>
-      {contents.map((content) => (
-        <div
-          key={content._id}
-          className={styles.container}
-          onClick={() => {
-            handleNavContent(content._id);
-          }}
-        >
-          <h2 className={styles.h2}>{content.topics}</h2>
-          <p>
-            Based on{" "}
-            <a
-              className={styles.a}
-              href={content.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log("Clicked");
-                // router.push(track.link);
-                window.open(content.link, "_blank");
-              }}
-            >
-              {getFileName(content.link)}
-            </a>
-          </p>
-          <button
-            type="submit"
-            disabled={isWaiting}
-            className={styles.button}
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleDelete(track._id);
+      {isLoading ? (
+        <h1 className={styles.title}>Loading...</h1>
+      ) : contents.length === 0 ? (
+        <h1 className={styles.title}>No contents in this track</h1>
+      ) : (
+        contents.map((content) => (
+          <div
+            key={content._id}
+            className={styles.container}
+            onClick={() => {
+              handleNavContent(content._id);
             }}
           >
-            delete
-          </button>
-        </div>
-      ))}
+            <h2 className={styles.h2}>{content.topics}</h2>
+            <p>
+              Based on{" "}
+              <a
+                className={styles.a}
+                href={content.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log("Clicked");
+                  // router.push(track.link);
+                  window.open(content.link, "_blank");
+                }}
+              >
+                {getFileName(content.link)}
+              </a>
+            </p>
+            <button
+              type="submit"
+              disabled={isWaiting}
+              className={styles.button}
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDelete(track._id);
+              }}
+            >
+              delete
+            </button>
+          </div>
+        ))
+      )}
       <div className={styles.addContainer} onClick={handleClick}>
         <h1>Add new content</h1>
       </div>
