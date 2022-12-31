@@ -1,5 +1,6 @@
 import dbConnect from "../../../utils/dbConnector";
 import Content from "../../../models/Content";
+import Track from "../../../models/Track";
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
   getOwnerAndRepoForContent,
@@ -32,6 +33,7 @@ export default async function handler(
 
         res.status(200).json({ success: true, data: content });
       } catch (error) {
+        console.log("Error is: ", error);
         res.status(400).json({ success: false });
       }
       break;
@@ -79,6 +81,18 @@ export default async function handler(
             }
           }
         }
+
+        const track = await Track.findById(req.body.trackId);
+
+        const index = track.contents.indexOf(id);
+        if (index > -1) {
+          track.contents.splice(index, 1);
+          await Track.findByIdAndUpdate(req.body.trackId, track, {
+            new: true,
+            runValidators: true,
+          });
+        }
+
         const deletedContent = await Content.deleteOne({ _id: id });
 
         if (!deletedContent) {
@@ -86,7 +100,8 @@ export default async function handler(
         }
         res.status(200).json({ success: true, data: {} });
       } catch (error) {
-        res.status(200).json({ success: false, data: {} });
+        console.log("Error is: ", error);
+        res.status(400).json({ success: false, data: {} });
       }
       break;
     default:

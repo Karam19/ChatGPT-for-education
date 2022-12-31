@@ -29,6 +29,7 @@ export default async function handler(
 
         res.status(200).json({ success: true, data: track });
       } catch (error) {
+        console.log("Error is: ", error);
         res.status(400).json({ success: false });
       }
       break;
@@ -84,6 +85,7 @@ export default async function handler(
         }
         res.status(200).json({ success: true, data: {} });
       } catch (error) {
+        console.log("Error is: ", error);
         res.status(200).json({ success: false, data: {} });
       }
       break;

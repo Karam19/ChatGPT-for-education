@@ -90,12 +90,16 @@ export default function Track() {
 
   async function deleteContent(id: string) {
     setIsWaiting(true);
+    console.log("Id is: ", id);
     const response = await fetch(`/api/contents/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        trackId: trackId,
+      }),
     });
     const data = await response.json();
     if (!data.success) {
@@ -104,11 +108,12 @@ export default function Track() {
         alert("Failed to delete!\nPlease Sign in");
       } else if (statusCode === 403) {
         alert("Failed to delete!\nYou don't have permission to delete");
-      } else if (statusCode === 403) {
+      } else if (statusCode === 400) {
         alert("Failed to delete!\nBad request");
       }
     } else {
       alert("Deleted successfully!");
+      router.reload();
     }
     setIsWaiting(false);
   }
@@ -205,7 +210,7 @@ export default function Track() {
               onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleDelete(track._id);
+                handleDelete(content._id);
               }}
             >
               delete

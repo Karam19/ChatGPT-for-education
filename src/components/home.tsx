@@ -89,7 +89,7 @@ export default function Home() {
         alert("Failed to delete!\nPlease Sign in");
       } else if (statusCode === 403) {
         alert("Failed to delete!\nYou don't have permission to delete");
-      } else if (statusCode === 403) {
+      } else if (statusCode === 400) {
         alert("Failed to delete!\nBad request");
       }
     } else {
