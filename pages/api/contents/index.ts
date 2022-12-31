@@ -5,6 +5,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import {
   getOwnerAndRepoForContent,
   isContributor,
+  getOwnerAndRepo,
 } from "../../../utils/Scraper";
 import { unstable_getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
@@ -56,13 +57,33 @@ export default async function handler(
             }
           }
         }
+
+        const track = await Track.findById(req.body.trackId);
+
+        const trackOwnerRepo = await getOwnerAndRepo(track.link);
+
+        if (trackOwnerRepo === null) {
+          res.status(500).json({ success: false });
+          return;
+        } else {
+          if (trackOwnerRepo[0] === null && trackOwnerRepo[1] === null) {
+            res.status(500).json({ success: false });
+            return;
+          }
+          if (
+            trackOwnerRepo[0] !== ownerRepo[0] ||
+            trackOwnerRepo[1] !== ownerRepo[1]
+          ) {
+            res.status(409).json({ success: false });
+            return;
+          }
+        }
+
         const content = await Content.create({
           topics: req.body.topics,
           link: req.body.link,
           answer: req.body.answer,
         });
-
-        const track = await Track.findById(req.body.trackId);
 
         track.contents.push(content._id);
 

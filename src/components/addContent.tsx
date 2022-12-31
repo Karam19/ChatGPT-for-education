@@ -125,6 +125,10 @@ export default function AddContent() {
         );
       } else if (statusCode === 403) {
         alert("Failed to add content!\nBad request");
+      } else if (statusCode === 409) {
+        alert(
+          "Failed to add content!\nGithub file should be under tracks' repository"
+        );
       }
     } else {
       router.push(`/contents/${data.data._id}`);
