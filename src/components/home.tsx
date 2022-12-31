@@ -3,6 +3,7 @@ import styles from "../../styles/home.module.css";
 import { useRouter } from "next/router";
 import { Popup } from "./popup";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 interface trackInterface {
   title: string;
@@ -27,7 +28,7 @@ export default function Home() {
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { status } = useSession();
-  
+
   function getRepoName(url: string) {
     const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
     const owner = ownerRe.exec(url);
@@ -44,6 +45,11 @@ export default function Home() {
 
   const handleDelete = (id: string) => {
     setIsWaiting(true);
+    if (status === "unauthenticated") {
+      alert("Failed to delete!\nPlease Sign in");
+      setIsWaiting(false);
+      return;
+    }
     setPopup({
       show: true,
       id,
@@ -69,11 +75,6 @@ export default function Home() {
   };
 
   async function deleteTrack(id: string) {
-    if (status === "unauthenticated") {
-      alert("Failed to delete!\nPlease Sign in");
-    setIsWaiting(false);
-      return;
-    }
     const response = await fetch(`/api/tracks/${id}`, {
       method: "DELETE",
       headers: {
@@ -122,6 +123,9 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>Tracks</title>
+      </Head>
       <h1 className={styles.title}>
         Exploration Etherscan + ChatGPt for education
       </h1>

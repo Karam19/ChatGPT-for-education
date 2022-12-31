@@ -4,6 +4,7 @@ import styles from "../../styles/home.module.css";
 import { useRouter } from "next/router";
 import { Popup } from "../../src/components/popup";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 interface trackInterface {
   title: string;
@@ -60,6 +61,10 @@ export default function Track() {
   }
 
   const handleDelete = (id: string) => {
+    if (status === "unauthenticated") {
+      alert("Failed to delete!\nPlease Sign in");
+      return;
+    }
     setPopup({
       show: true,
       id,
@@ -85,11 +90,6 @@ export default function Track() {
 
   async function deleteContent(id: string) {
     setIsWaiting(true);
-    if (status === "unauthenticated") {
-      alert("Failed to delete!\nPlease Sign in");
-      setIsWaiting(false);
-      return;
-    }
     const response = await fetch(`/api/contents/${id}`, {
       method: "DELETE",
       headers: {
@@ -160,6 +160,9 @@ export default function Track() {
 
   return (
     <Layout>
+      <Head>
+        <title>Content of track</title>
+      </Head>
       <h1 className={styles.title}>{track?.title}</h1>
       <h1 className={styles.h3}>
         Based on This <a href={track.link}>repository</a>

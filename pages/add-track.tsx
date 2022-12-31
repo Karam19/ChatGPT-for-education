@@ -3,6 +3,7 @@ import Layout from "../src/components/layout";
 import styles from "../styles/addContent.module.css";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 export default function AddTrack() {
   const router = useRouter();
@@ -72,6 +73,9 @@ export default function AddTrack() {
 
   return (
     <Layout>
+      <Head>
+        <title>Add track</title>
+      </Head>
       <div className={styles.container}>
         <label className={styles.label}>Name of the track</label>
         <input

@@ -2,6 +2,7 @@ import Layout from "../../src/components/layout";
 import styles from "../../styles/home.module.css";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import Head from "next/head";
 
 interface contentInterface {
   topics: string;
@@ -42,6 +43,9 @@ export default function Content() {
 
   return (
     <Layout>
+      <Head>
+        <title>Lesson</title>
+      </Head>
       <h1 className={styles.title}>{content?.topics}</h1>
       <h1 className={styles.h3}>
         Based on This <a href={content.link}>code</a>
