@@ -48,7 +48,20 @@ export default function AddContent() {
       }),
     });
     const data = await response.json();
-    setContent(data.result.choices[0].text);
+    const statusCode = response.status;
+    console.log("Status code is: ", statusCode);
+    if (!data.success) {
+      setContent("Unkown error");
+      if (statusCode === 404) {
+        alert(
+          "ChatGPT couldn't process your request!\nPlease check that file length don't exceed 4k tokens."
+        );
+      } else {
+        alert("Unkown error!");
+      }
+    } else {
+      setContent(data.result.choices[0].text);
+    }
     setIsWaiting(false);
   }
 
