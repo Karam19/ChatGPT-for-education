@@ -56,6 +56,10 @@
 }
 
 .element {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 15px 32px;
 }

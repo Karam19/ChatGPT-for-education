@@ -3,6 +3,7 @@ import styles from "../../styles/addContent.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Editor from "@monaco-editor/react";
+import editor from "@monaco-editor/react";
 import { languageOptions } from "../constants/languageOptions";
 import LanguagesDropdown from "./languagesDropdown";
 
@@ -19,6 +20,7 @@ export default function AddContent() {
   );
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [language, setLanguage] = useState(languageOptions[0]);
+  const [lock, setLock] = useState(false);
 
   function handleTopicChange(event: any) {
     setTopics(event.target.value);
@@ -45,6 +47,7 @@ export default function AddContent() {
   ) {
     setIsWaiting(true);
     setContent("Generating...");
+    const text = getText();
     const response = await fetch("/api/contents/generate", {
       method: "POST",
       headers: {
@@ -57,6 +60,7 @@ export default function AddContent() {
         path: path,
         topics: topics,
         trackId: trackId,
+        code: text,
       }),
     });
     const data = await response.json();
@@ -75,6 +79,19 @@ export default function AddContent() {
       setContent(data.result.choices[0].text);
     }
     setIsWaiting(false);
+  }
+  function getText() {
+    const selectedText = window.getSelection()?.toString();
+    const textLength = selectedText?.length;
+    if (textLength !== undefined) {
+      if (textLength > 0) {
+        return selectedText;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   async function handleGenerate() {
@@ -188,8 +205,7 @@ export default function AddContent() {
       alert("Unkown error");
     } else {
       setCode(data.result);
-      console.log("Type of data is: ", typeof data.result);
-      console.log("data is ", code);
+      setLock(true);
     }
     setIsWaiting(false);
   }
@@ -260,38 +276,42 @@ export default function AddContent() {
             fetch code
           </button>
         </div>
-        <div className={styles.element}>
-          <LanguagesDropdown onSelectChange={onSelectChange} />
-        </div>
+        {lock && (
+          <div className={styles.element}>
+            <div className={styles.element}>
+              <LanguagesDropdown onSelectChange={onSelectChange} />
+            </div>
 
-        <Editor
-          height="90vh"
-          language={language.value || "javascript"}
-          defaultValue="// please add a link to a github file and click on fetch button"
-          value={code}
-        />
-        <button
-          type="submit"
-          className={styles.button}
-          disabled={isWaiting}
-          onClick={handleGenerate}
-        >
-          Generate content
-        </button>
-        <label className={styles.label}>Content</label>
-        <textarea
-          className={styles.textarea}
-          value={content}
-          onChange={handleContentChange}
-        ></textarea>
-        <button
-          type="submit"
-          className={styles.button}
-          onClick={handleSubmit}
-          disabled={isWaiting}
-        >
-          Submit
-        </button>
+            <Editor
+              height="90vh"
+              language={language.value || "javascript"}
+              defaultValue="// please add a link to a github file and click on fetch button"
+              value={code}
+            />
+            <button
+              type="submit"
+              className={styles.button}
+              disabled={isWaiting}
+              onClick={handleGenerate}
+            >
+              Generate content
+            </button>
+            <label className={styles.label}>Content</label>
+            <textarea
+              className={styles.textarea}
+              value={content}
+              onChange={handleContentChange}
+            ></textarea>
+            <button
+              type="submit"
+              className={styles.button}
+              onClick={handleSubmit}
+              disabled={isWaiting}
+            >
+              Submit
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

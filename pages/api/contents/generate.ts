@@ -16,20 +16,25 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const content = await octokit.request(
-      "GET /repos/{owner}/{repo}/contents/{path}{?ref}",
-      {
-        owner: req.body.owner,
-        repo: req.body.repo,
-        path: req.body.path,
-        ref: req.body.ref,
+    let code = "";
+    if (req.body.code === null) {
+      const content = await octokit.request(
+        "GET /repos/{owner}/{repo}/contents/{path}{?ref}",
+        {
+          owner: req.body.owner,
+          repo: req.body.repo,
+          path: req.body.path,
+          ref: req.body.ref,
+        }
+      );
+      if (!content.data.content) {
+        res.status(400).json({ success: false });
+        return;
       }
-    );
-    if (!content.data.content) {
-      res.status(400).json({ success: false });
-      return;
+      code = Buffer.from(content.data.content, "base64").toString("binary");
+    } else {
+      code = req.body.code;
     }
-    const code = Buffer.from(content.data.content, "base64").toString("binary");
     const prompt = `Can you explain ${req.body.topics} based on the following code ${code}`;
     const completion = await openai.createCompletion({
       model: "text-davinci-002",
