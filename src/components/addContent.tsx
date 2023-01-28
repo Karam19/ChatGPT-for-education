@@ -3,6 +3,8 @@ import styles from "../../styles/addContent.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Editor from "@monaco-editor/react";
+import { languageOptions } from "../constants/languageOptions";
+import LanguagesDropdown from "./languagesDropdown";
 
 export default function AddContent() {
   const router = useRouter();
@@ -13,6 +15,7 @@ export default function AddContent() {
   const [searchError, setSearchError] = useState<boolean>(false);
   const [content, setContent] = useState<string>("");
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
+  const [language, setLanguage] = useState(languageOptions[0]);
 
   function handleTopicChange(event: any) {
     setTopics(event.target.value);
@@ -25,6 +28,11 @@ export default function AddContent() {
   function handleContentChange(event: any) {
     setContent(event.target.value);
   }
+
+  const onSelectChange = (sl: any) => {
+    console.log("selected Option...", sl);
+    setLanguage(sl);
+  };
 
   async function GenerateContetnt(
     owner: string,
@@ -169,11 +177,17 @@ export default function AddContent() {
         {searchError && (
           <div className={styles.errortext}>Invalid github url</div>
         )}
-        <label className={styles.label}>Fetched code</label>
+        <div className={styles.element}>
+          <label className={styles.label}>Fetched code</label>
+        </div>
+        <div className={styles.element}>
+          <LanguagesDropdown onSelectChange={onSelectChange} />
+        </div>
+
         <Editor
           height="90vh"
-          defaultLanguage="javascript"
-          defaultValue="// some comment"
+          language={language.value || "javascript"}
+          defaultValue="// please add a link to a github file and click on fetch button"
         />
         <button
           type="submit"

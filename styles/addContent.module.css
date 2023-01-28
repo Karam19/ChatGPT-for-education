@@ -54,3 +54,8 @@
   align-text: center;
   color: red;
 }
+
+.element {
+  text-align: center;
+  padding: 15px 32px;
+}
