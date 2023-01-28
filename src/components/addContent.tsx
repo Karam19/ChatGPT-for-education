@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "../../styles/addContent.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Editor from "@monaco-editor/react";
 
 export default function AddContent() {
   const router = useRouter();
@@ -168,6 +169,12 @@ export default function AddContent() {
         {searchError && (
           <div className={styles.errortext}>Invalid github url</div>
         )}
+        <label className={styles.label}>Fetched code</label>
+        <Editor
+          height="90vh"
+          defaultLanguage="javascript"
+          defaultValue="// some comment"
+        />
         <button
           type="submit"
           className={styles.button}
