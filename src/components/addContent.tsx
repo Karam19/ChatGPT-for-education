@@ -14,6 +14,9 @@ export default function AddContent() {
   const [url, setUrl] = useState("");
   const [searchError, setSearchError] = useState<boolean>(false);
   const [content, setContent] = useState<string>("");
+  const [code, setCode] = useState<string>(
+    "// please add a link to a github file and click on fetch button"
+  );
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [language, setLanguage] = useState(languageOptions[0]);
 
@@ -157,6 +160,76 @@ export default function AddContent() {
     }
   }
 
+  async function fetchCode(
+    owner: string,
+    repo: string,
+    ref: string,
+    path: string
+  ) {
+    setIsWaiting(true);
+    setCode("// Generating...");
+    const response = await fetch("/api/contents/fetchcode", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        owner: owner,
+        repo: repo,
+        ref: ref,
+        path: path,
+      }),
+    });
+    const data = await response.json();
+    const statusCode = response.status;
+    console.log("Status code is: ", statusCode);
+    if (!data.success) {
+      setCode("// Unkown error");
+      alert("Unkown error");
+    } else {
+      setCode(data.result);
+      console.log("Type of data is: ", typeof data.result);
+      console.log("data is ", code);
+    }
+    setIsWaiting(false);
+  }
+
+  async function handleFetch() {
+    const ownerRe = new RegExp("(?<=https://github.com/).+?(?=/)", "g");
+    const owner = ownerRe.exec(url);
+    if (owner === null) {
+      setSearchError(true);
+      return;
+    }
+
+    const repoRe = new RegExp(
+      `(?<=https://github.com/${owner[0]}/).+?(?=/blob/)`,
+      "g"
+    );
+    const repo = repoRe.exec(url);
+    if (repo === null) {
+      setSearchError(true);
+      return;
+    }
+
+    const refRe = new RegExp("(?<=blob/).+?(?=/)", "g");
+    const ref = refRe.exec(url);
+    if (ref === null) {
+      setSearchError(true);
+      return;
+    }
+
+    const pathRe = new RegExp(`(?<=blob/${ref[0]}).+`, "g");
+    const path = pathRe.exec(url);
+    if (path === null) {
+      setSearchError(true);
+      return;
+    }
+
+    setSearchError(false);
+    fetchCode(owner[0], repo[0], ref[0], path[0]);
+  }
+
   return (
     <>
       <div className={styles.container}>
@@ -178,7 +251,14 @@ export default function AddContent() {
           <div className={styles.errortext}>Invalid github url</div>
         )}
         <div className={styles.element}>
-          <label className={styles.label}>Fetched code</label>
+          <button
+            type="submit"
+            className={styles.button}
+            disabled={isWaiting}
+            onClick={handleFetch}
+          >
+            fetch code
+          </button>
         </div>
         <div className={styles.element}>
           <LanguagesDropdown onSelectChange={onSelectChange} />
@@ -188,6 +268,7 @@ export default function AddContent() {
           height="90vh"
           language={language.value || "javascript"}
           defaultValue="// please add a link to a github file and click on fetch button"
+          value={code}
         />
         <button
           type="submit"
